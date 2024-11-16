@@ -120,4 +120,75 @@ public class TestSorter {
     ArrayUtils.permute(original);
     assertSorts(expected, original, intSorter);
   } // permutedIntegers
+
+  /**
+   * Ensure that an empty array remains as the same empty array.
+   */
+  @Test
+  public void emptyArrayTest(){
+    if (null == stringSorter) {
+      return;
+    } // if
+    String[] original = {};
+    String[] expected = original.clone();
+    assertSorts(expected, original, stringSorter);
+  }
+
+  /**
+   * Ensure that an array with one element returns the same array.
+   */
+  @Test
+  public void singleElementArrayTest(){
+    if (null == stringSorter) {
+      return;
+    } // if
+    String[] original = {"Saturday"};
+    String[] expected = original.clone();
+    ArrayUtils.permute(original);
+    assertSorts(expected, original, stringSorter);
+  }
+
+  /**
+   * Ensure that it will return the same array if all elements are equal.
+   */
+  @Test
+  public void sameElementsArrayTest(){
+    if (null == stringSorter) { 
+      return; 
+    } // if
+    String[] original = new String[1000];
+    for (int i = 0; i < 1000; i++) {
+      original[i] = "Saturday";
+    } // for
+    String[] expected = original.clone();
+    ArrayUtils.permute(original);
+    assertSorts(expected, original, stringSorter);
+  }
+  
+  /**
+   * Ensure that an array that constains its elements to be sorted as the
+   * first and last elements get sorted correctly.
+   */
+  @Test
+  public void elementsAtExtremesTest(){
+    if (null == intSorter) {
+      return;
+    } // if
+    Integer[] original = { 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1 };
+    Integer[] expected = { -1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1 };
+    assertSorts(expected, original, intSorter);
+  }
+
+  /**
+   * Ensure string sorting is case sensitive
+   */
+  @Test
+  public void caseSensitiveTest(){
+    if (null == stringSorter) {
+      return;
+    } // if
+    String[] original = {"saturday", "Saturday", "SATURDAY", "sAtUrDaY"};
+    String[] expected = {"SATURDAY", "Saturday", "sAtUrDaY", "saturday" };
+    assertSorts(expected, original, stringSorter);
+  }
 } // class TestSorter
