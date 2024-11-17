@@ -1,6 +1,7 @@
 package edu.grinnell.csc207.sorting;
 
 import java.util.Comparator;
+import edu.grinnell.csc207.util.ArrayUtils;
 
 /**
  * Something that sorts using Quicksort.
@@ -55,6 +56,50 @@ public class Quicksorter<T> implements Sorter<T> {
    */
   @Override
   public void sort(T[] values) {
-    // STUB
+    if (values.length <= 2) {
+      return;
+    } // if
+    quickSort(values, 0, values.length - 1);
   } // sort(T[])
+
+  /**
+   * Helper that recursively calls quick sort with differen pivots.
+   *
+   * @param values
+   * @param lb
+   * @param ub
+   */
+  private void quickSort(T[] values, int lb, int ub) {
+    if (lb < ub) {
+      int pivotIndex = partition(values, lb, ub);
+
+      quickSort(values, lb, pivotIndex - 1);
+      quickSort(values, pivotIndex + 1, ub);
+    } // if
+  } // quickSort(T[] values, int lb, int ub)
+
+  /**
+   * Helper that generates the pivot.
+   *
+   * @param values
+   * @param lb
+   * @param ub
+   * @return the pivot.
+   */
+  private int partition(T[] values, int lb, int ub) {
+    int randomPivot = lb + (int) (Math.random() * (ub - lb + 1));
+    ArrayUtils.swap(values, randomPivot, ub);
+
+    T pivot = values[ub];
+    int i = lb - 1;
+
+    for (int j = lb; j < ub; j++) {
+      if (order.compare(values[j], pivot) <= 0) {
+        i++;
+        ArrayUtils.swap(values, i, j);
+      } // if
+    } // for
+    ArrayUtils.swap(values, i + 1, ub);
+    return i + 1;
+  } // partition(T[] values, int lb, int ub)
 } // class Quicksorter

@@ -1,16 +1,17 @@
 package edu.grinnell.csc207.sorting;
 
 import java.util.Comparator;
+import edu.grinnell.csc207.util.ArrayUtils;
 
 /**
- * Something that sorts using merge sort.
+ * Something that sorts using insertion sort.
  *
  * @param <T> The types of values that are sorted.
  *
- * @author Samuel A. Rebelsky
+ * @author Leonardo Alves Nunes
  */
 
-public class MergeSorter<T> implements Sorter<T> {
+public class NunesLeonardoSort<T> implements Sorter<T> {
   // +--------+------------------------------------------------------
   // | Fields |
   // +--------+
@@ -29,16 +30,16 @@ public class MergeSorter<T> implements Sorter<T> {
    *
    * @param comparator The order in which elements in the array should be ordered after sorting.
    */
-  public MergeSorter(Comparator<? super T> comparator) {
+  public NunesLeonardoSort(Comparator<? super T> comparator) {
     this.order = comparator;
-  } // MergeSorter(Comparator)
+  } // InsertionSorter(Comparator)
 
   // +---------+-----------------------------------------------------
   // | Methods |
   // +---------+
 
   /**
-   * Sort an array in place using merge sort.
+   * Sorts using Merge sort for large inputs and Selection sort for small ones.
    *
    * @param values an array to sort.
    *
@@ -47,6 +48,12 @@ public class MergeSorter<T> implements Sorter<T> {
    */
   @Override
   public void sort(T[] values) {
+    //The benefit of this is that as Merge and Selection sort have similar time
+    //for small inputs, we can change to selection sort to avoid creating too many
+    //arrays for merge sort, saving space.
+
+    //After running some experiments comparing Merge and NunesLeonardoSort I
+    //observed that my sort is not faster by a significant amount.
     if (values.length <= 1) {
       return;
     } // if
@@ -54,46 +61,57 @@ public class MergeSorter<T> implements Sorter<T> {
     mergeSort(values, 0, values.length - 1);
   } // sort(T[])
 
-  /**
+  /*
    * Helper method that call merge sort recursively.
-   *
-   * @param values an array to sort.
-   * @param lb lower bound.
-   * @param ub upper bound.
    */
-  private void mergeSort(T[] values, int lb, int ub) {
-
+  private void mergeSort(T[] array, int lb, int ub) {
     int middle = lb + (ub - lb) / 2;
 
     if (lb >= ub) {
       return;
     } // if
 
-    mergeSort(values, lb, middle);
-    mergeSort(values, middle + 1, ub);
-
-    merge(values, lb, middle, ub);
-  } // mergeSort(T[] values, int lb, int ub)
+    //I considered 10 to be a "small input".
+    if (array.length < 10) {
+      int smallIndex;
+      if (array.length <= 1) {
+        return;
+      } // if
+      for (int current = 0; current < array.length; current++) {
+        smallIndex = current;
+        // Finding the smallest value among the unprocessed array
+        for (int current2 = current; current2 < array.length; current2++) {
+          if (order.compare(array[smallIndex], array[current2]) > 0) {
+            smallIndex = current2;
+          } // if
+        } // for
+        ArrayUtils.swap(array, current, smallIndex);
+      } // for
+    } else {
+      mergeSort(array, lb, middle);
+      mergeSort(array, middle + 1, ub);
+      merge(array, lb, middle, ub);
+    } // if-else
+  } // mergeSort(T[] array, int lb, ub)
 
   /*
    * Helper function where comparing and merging happens
    */
-  private void merge(T[] values, int lb, int middle, int ub) {
+  private void merge(T[] array, int lb, int middle, int ub) {
     int lengthOfLeft = middle - lb + 1;
     int lengthOfRight = ub - middle;
 
-    //Although merge sort is fast, it needs extra space
     T[] leftArray = (T[]) new Object[lengthOfLeft];
     T[] rightArray = (T[]) new Object[lengthOfRight];
 
     // From the beginning until the middle
     for (int i = 0; i < lengthOfLeft; i++) {
-      leftArray[i] = values[lb + i];
+      leftArray[i] = array[lb + i];
     } // for
 
     // From middle until the end
     for (int j = 0; j < lengthOfRight; j++) {
-      rightArray[j] = values[middle + 1 + j];
+      rightArray[j] = array[middle + 1 + j];
     } // for
 
     // Now we have two arrays, which represents each side
@@ -104,12 +122,12 @@ public class MergeSorter<T> implements Sorter<T> {
 
     while (i < lengthOfLeft && j < lengthOfRight) {
       if (order.compare(leftArray[i], rightArray[j]) <= 0) {
-        values[lb] = leftArray[i];
+        array[lb] = leftArray[i];
 
         lb++;
         i++;
       } else {
-        values[lb] = rightArray[j];
+        array[lb] = rightArray[j];
 
         lb++;
         j++;
@@ -117,19 +135,19 @@ public class MergeSorter<T> implements Sorter<T> {
     } // while
 
     // Just copy the rest of the other array in case
-    // we reached the end of one of them
+    // we reached the end of the other
     while (i < lengthOfLeft) {
-      values[lb] = leftArray[i];
+      array[lb] = leftArray[i];
 
       lb++;
       i++;
     } // while
 
     while (j < lengthOfRight) {
-      values[lb] = rightArray[j];
+      array[lb] = rightArray[j];
 
       lb++;
       j++;
     } // while
   } // merge (T[] array, int lb, int middle, int ub)
-} // class MergeSorter
+} // class InsertionSorter
