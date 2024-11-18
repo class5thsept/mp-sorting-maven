@@ -48,19 +48,23 @@ public class SelectionSorter<T> implements Sorter<T> {
    */
   @Override
   public void sort(T[] values) {
-    int smallIndex;
     if (values.length <= 1) {
       return;
     } // if
+
     for (int current = 0; current < values.length; current++) {
-      smallIndex = current;
       // Finding the smallest value among the unprocessed array
-      for (int current2 = current; current2 < values.length; current2++) {
-        if (order.compare(values[smallIndex], values[current2]) > 0) {
-          smallIndex = current2;
-        } // if
-      } // for
-      ArrayUtils.swap(values, current, smallIndex);
+      ArrayUtils.swap(values, current, indexOfSmallest(values, current));
     } // for
   } // sort(T[])
+
+  private int indexOfSmallest(T[] values, int indexOfCurrent){
+    int smallIndex = indexOfCurrent;
+    for (int current2 = indexOfCurrent; current2 < values.length; current2++) {
+      if (order.compare(values[smallIndex], values[current2]) > 0) {
+        smallIndex = current2;
+      } // if
+    } // for
+    return smallIndex;
+  }
 } // class SelectionSorter
