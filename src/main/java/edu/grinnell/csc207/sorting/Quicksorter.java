@@ -56,10 +56,10 @@ public class Quicksorter<T> implements Sorter<T> {
    */
   @Override
   public void sort(T[] values) {
-    if (values.length <= 2) {
+    if (values.length <= 1) {
       return;
     } // if
-    quickSort(values, 0, values.length - 1);
+    quickSort(values, 0, values.length);
   } // sort(T[])
 
   /**
@@ -73,7 +73,7 @@ public class Quicksorter<T> implements Sorter<T> {
     if (lb < ub) {
       int pivotIndex = partition(values, lb, ub);
 
-      quickSort(values, lb, pivotIndex - 1);
+      quickSort(values, lb, pivotIndex);
       quickSort(values, pivotIndex + 1, ub);
     } // if
   } // quickSort(T[] values, int lb, int ub)
@@ -87,19 +87,23 @@ public class Quicksorter<T> implements Sorter<T> {
    * @return the pivot.
    */
   private int partition(T[] values, int lb, int ub) {
-    int randomPivot = lb + (int) (Math.random() * (ub - lb + 1));
-    ArrayUtils.swap(values, randomPivot, ub);
+    int pivotIndex = lb + (int) (Math.random() * (ub - lb));
+    //Put at the beginning
+    ArrayUtils.swap(values, pivotIndex, lb);
 
-    T pivot = values[ub];
-    int i = lb - 1;
+    T pivot = values[lb];
+    int sm = lb + 1;
+    int lg = ub;
 
-    for (int j = lb; j < ub; j++) {
-      if (order.compare(values[j], pivot) <= 0) {
-        i++;
-        ArrayUtils.swap(values, i, j);
-      } // if
-    } // for
-    ArrayUtils.swap(values, i + 1, ub);
-    return i + 1;
+    while (sm < lg) {
+      if (order.compare(pivot, values[sm]) > 0) {
+        sm++;
+      } else {
+        ArrayUtils.swap(values, sm, lg - 1);
+        lg--;
+      }
+    }
+    ArrayUtils.swap(values, lb, sm-1);
+    return sm-1;
   } // partition(T[] values, int lb, int ub)
 } // class Quicksorter
